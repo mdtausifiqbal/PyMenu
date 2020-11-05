@@ -1,4 +1,5 @@
 import os
+from abc import ABC, abstractmethod
 
 class MenuItem:
     BACK = {"name" : "Back"}
@@ -110,24 +111,68 @@ class Menu:
     def isMain(self):
         return self.getType() == 'main_menu'
 
+class MenuInterface(ABC):
+    #this method is invoked on getting user input
+    @abstractmethod
+    def getUserInput(handler):
+        pass
+    
+    #this method is invoked before start printing the menu items
+    @abstractmethod
+    def onStart(handler):
+        pass
+    
+    #this method is invoked while printing each menu items
+    @abstractmethod
+    def onPrint(handler, key, name):
+        pass
+    
+    #this method is invoked after completing the print menu items
+    @abstractmethod
+    def onStop(handler):
+        pass
+    
+class MenuHistory:
+    
+    def __init__(self):
+        self.menu_list = list()
+    
+    #it append menu object to the list of menu
+    def add(self, menu):
+        self.menu_list.append(menu)
+    
+    #it deletes particular menu from history
+    def delete(self, menu):
+        self.menu_list.remove(menu)
+        
+    #it deletes last one menu from history
+    def deleteLast(self):
+        return self.menu_list.pop()
+    
+    #it clears all history
+    def clear(self):
+        self.menu_list.clear()
+        self.menu_list = list()
+        
+    
 class MenuHandler:
 
     def __init__(self):
-        self.history = list()
+        self.history = MenuHistory()
 
     #menu is type of Menu Object not dict type
     def setMenu(self, menu):
         self.menu = menu
-        self.addHistory(menu)
+        self.getHistory().add(menu)
 
     #return is type of Menu Object not dict type
     def getMenu(self):
         return self.menu
-
-    #this is used for tracking the history of change in menu transaction
-    def addHistory(self, menu):
-        self.getHistory().append(menu)
-
+    
+    #it will set the history for handler
+    def setHistory(self, history):
+        self.history = history
+        
     #it returns the list of Menu Object from history
     def getHistory(self):
         return self.history
@@ -135,8 +180,8 @@ class MenuHandler:
     #this function is used for switching back to the parent menu if exists
     def back(self):
         #remove current menu from history
-        self.getHistory().pop()
-        parentMenu = self.getHistory().pop()
+        self.getHistory().deleteLast()
+        parentMenu = self.getHistory().deleteLast()
         self.setMenu(parentMenu)
         self.printMenu()
 
