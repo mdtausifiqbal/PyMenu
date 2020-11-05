@@ -40,6 +40,7 @@ menu = {
           {"name" : "Item 2", "function" : function4}
         ]
       }
+    }
   ]
 }
 ```
