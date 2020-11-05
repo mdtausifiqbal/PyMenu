@@ -2,14 +2,14 @@
 A module for building menus in python.
 ## Syntax
 ### Menu Item
-```
+```python
 Item = {
   "name" : "Item name",
   "function" : function
 }
 ```
 ### Menu
-```
+```python
 menu = {
   "name" : "Menu Name",
   "type" : "main_menu",
@@ -20,7 +20,7 @@ menu = {
 }
 ```
 ### Nested Menu
-```
+```python
 menu = {
   "name" : "Menu Name",
   "type" : "main_menu",
@@ -43,7 +43,7 @@ menu = {
 ## Example
 
 ### Define Functions for Menu Item
-```
+```python
 def hello():
     print("Hello World")
     
@@ -54,7 +54,7 @@ def subHello():
     print("Sub Hello World")
 ```
 ### Define Main Menu
-```
+```python
 main_menu = {
     "name" : "Main Menu",
     "type" : "main_menu",
@@ -83,7 +83,7 @@ main_menu = {
 }
 ```
 ### Bind to Menu Handler
-```
+```python
 from menu import Menu, MenuHandler
 menu = Menu(main_menu)
 handler = MenuHandler()
