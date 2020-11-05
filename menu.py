@@ -114,22 +114,22 @@ class Menu:
 class MenuInterface(ABC):
     #this method is invoked on getting user input
     @abstractmethod
-    def getUserInput(handler):
+    def getUserInput(self, handler):
         pass
     
     #this method is invoked before start printing the menu items
     @abstractmethod
-    def onStart(handler):
+    def onStart(self, handler):
         pass
     
     #this method is invoked while printing each menu items
     @abstractmethod
-    def onPrint(handler, key, name):
+    def onPrint(self, handler, key, name):
         pass
     
     #this method is invoked after completing the print menu items
     @abstractmethod
-    def onStop(handler):
+    def onStop(self, handler):
         pass
     
 class MenuHistory:
@@ -157,9 +157,19 @@ class MenuHistory:
     
 class MenuHandler:
 
-    def __init__(self):
-        self.history = MenuHistory()
+    def __init__(self, mInterface, menu, history=MenuHistory()):
+        self.setHistory(history)
+        self.setInterface(mInterface)
+        self.setMenu(menu)
 
+    #sets the listener or interface for MenuPrinting or getting Input from user
+    def setInterface(self, mInterface):
+        self.mInterface = mInterface
+    
+    #returns the listener or interface
+    def getInterface(self):
+        return self.mInterface
+        
     #menu is type of Menu Object not dict type
     def setMenu(self, menu):
         self.menu = menu
@@ -187,18 +197,17 @@ class MenuHandler:
 
     #this is an interface for defining the User Prompt text
     def getInput(self):
-        return input("Choose Option >> ")
+        return self.getInterface().getUserInput(self)
 
     #it prints the menu in default style from handler
     def printMenu(self):
-        os.system("clear")
+        self.getInterface().onStart(self)
         menuItems = self.getMenu().getItems()
-        print('')
         for i in range(len(menuItems)):
             key = i + 1
             name = MenuItem(menuItems[i]).getName()
-            print("   [ {} ] {}".format(key, name))
-        print('')
+            self.getInterface().onPrint(self, key, name)
+        self.getInterface().onStop(self)
 
     #this function is used for handle the user input and interacts with the menu and sub menu and menu item
     def handle(self):
