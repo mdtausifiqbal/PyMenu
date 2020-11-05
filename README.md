@@ -1,5 +1,9 @@
 # PyMenu
 A module for building menus in python.
+
+## Screenshot
+![screenshot](/screenshot/snap1.png?raw=true "PyMenu Snap")
+
 ## Syntax
 ### Menu Item
 ```python
