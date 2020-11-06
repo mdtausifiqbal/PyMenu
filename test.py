@@ -50,7 +50,7 @@ class MyInterface(MenuInterface):
         print('')
     
     def getUserInput(self, handler):
-        return input('Choose >> ')
+        return input('Choose Option >> ')
     
 menu = Menu(main_menu)
 interface = MyInterface()
