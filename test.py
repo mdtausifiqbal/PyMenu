@@ -1,4 +1,4 @@
-import menu
+import menu, os
 from menu import *
 
 def hello():
@@ -36,8 +36,24 @@ main_menu = {
         }
     ]
 }
+class MyInterface(MenuInterface):
+    
+    def onStart(self, handler):
+        os.system("clear")
+        print(handler.getMenu().getName())
+        print('')
+    
+    def onPrint(self, handler, key, name):
+        print('   [ {} ] {}'.format(key, name))
+    
+    def onStop(self, handler):
+        print('')
+    
+    def getUserInput(self, handler):
+        return input('Choose Option >> ')
+    
 menu = Menu(main_menu)
-handler = MenuHandler()
-handler.setMenu(menu)
+interface = MyInterface()
+handler = MenuHandler(interface, menu)
 handler.printMenu()
 handler.handle()

@@ -1,4 +1,5 @@
 import os
+from abc import ABC, abstractmethod
 
 class MenuItem:
     BACK = {"name" : "Back"}
@@ -110,24 +111,78 @@ class Menu:
     def isMain(self):
         return self.getType() == 'main_menu'
 
+class MenuInterface(ABC):
+    #this method is invoked on getting user input
+    @abstractmethod
+    def getUserInput(self, handler):
+        pass
+    
+    #this method is invoked before start printing the menu items
+    @abstractmethod
+    def onStart(self, handler):
+        pass
+    
+    #this method is invoked while printing each menu items
+    @abstractmethod
+    def onPrint(self, handler, key, name):
+        pass
+    
+    #this method is invoked after completing the print menu items
+    @abstractmethod
+    def onStop(self, handler):
+        pass
+    
+class MenuHistory:
+    
+    def __init__(self):
+        self.menu_list = list()
+    
+    #it append menu object to the list of menu
+    def add(self, menu):
+        self.menu_list.append(menu)
+    
+    #it deletes particular menu from history
+    def delete(self, menu):
+        self.menu_list.remove(menu)
+        
+    #it deletes last one menu from history
+    def deleteLast(self):
+        return self.menu_list.pop()
+    
+    #it clears all history
+    def clear(self):
+        self.menu_list.clear()
+        self.menu_list = list()
+        
+    
 class MenuHandler:
 
-    def __init__(self):
-        self.history = list()
+    def __init__(self, mInterface, menu, history=MenuHistory()):
+        self.setHistory(history)
+        self.setInterface(mInterface)
+        self.setMenu(menu)
 
+    #sets the listener or interface for MenuPrinting or getting Input from user
+    def setInterface(self, mInterface):
+        self.mInterface = mInterface
+    
+    #returns the listener or interface
+    def getInterface(self):
+        return self.mInterface
+        
     #menu is type of Menu Object not dict type
     def setMenu(self, menu):
         self.menu = menu
-        self.addHistory(menu)
+        self.getHistory().add(menu)
 
     #return is type of Menu Object not dict type
     def getMenu(self):
         return self.menu
-
-    #this is used for tracking the history of change in menu transaction
-    def addHistory(self, menu):
-        self.getHistory().append(menu)
-
+    
+    #it will set the history for handler
+    def setHistory(self, history):
+        self.history = history
+        
     #it returns the list of Menu Object from history
     def getHistory(self):
         return self.history
@@ -135,25 +190,24 @@ class MenuHandler:
     #this function is used for switching back to the parent menu if exists
     def back(self):
         #remove current menu from history
-        self.getHistory().pop()
-        parentMenu = self.getHistory().pop()
+        self.getHistory().deleteLast()
+        parentMenu = self.getHistory().deleteLast()
         self.setMenu(parentMenu)
         self.printMenu()
 
     #this is an interface for defining the User Prompt text
     def getInput(self):
-        return input("Choose Option >> ")
+        return self.getInterface().getUserInput(self)
 
     #it prints the menu in default style from handler
     def printMenu(self):
-        os.system("clear")
+        self.getInterface().onStart(self)
         menuItems = self.getMenu().getItems()
-        print('')
         for i in range(len(menuItems)):
             key = i + 1
             name = MenuItem(menuItems[i]).getName()
-            print("   [ {} ] {}".format(key, name))
-        print('')
+            self.getInterface().onPrint(self, key, name)
+        self.getInterface().onStop(self)
 
     #this function is used for handle the user input and interacts with the menu and sub menu and menu item
     def handle(self):

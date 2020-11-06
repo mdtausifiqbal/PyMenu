@@ -87,12 +87,31 @@ main_menu = {
     ]
 }
 ```
+
+### Define Interface
+```python
+class MyInterface(MenuInterface):
+    
+    def onStart(self, handler):
+        os.system("clear")
+        print(handler.getMenu().getName())
+        print('')
+    
+    def onPrint(self, handler, key, name):
+        print('   [ {} ] {}'.format(key, name))
+    
+    def onStop(self, handler):
+        print('')
+    
+    def getUserInput(self, handler):
+        return input('Choose Option >> ')
+```
 ### Bind to Menu Handler
 ```python
 from menu import Menu, MenuHandler
 menu = Menu(main_menu)
-handler = MenuHandler()
-handler.setMenu(menu)
+interface = MyInterface()
+handler = MenuHandler(interface, menu)
 handler.printMenu()
 handler.handle()
 ```
